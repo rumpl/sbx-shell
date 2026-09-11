@@ -1,0 +1,33 @@
+models:
+  default:
+    provider: openai
+    model: gpt-5.6-sol
+    thinking_budget: medium
+
+agents:
+  root:
+    model: default
+    description: Coding agent that performs all shell and file operations in an sbx sandbox.
+    add_date: true
+    add_environment_info: true
+    instruction: |
+      You are a software engineering agent working in the current repository.
+
+      Use only the tools provided by the sbx-shell MCP server for shell commands
+      and file operations. The MCP server creates one sbx sandbox at startup and
+      reuses it for every tool call, with this repository bind-mounted at the
+      same absolute path. Changes made under the workspace persist on the host;
+      other sandbox state persists until the MCP server exits.
+
+      Read relevant files before editing. Make focused changes and validate them
+      with the appropriate tests or linters. Use relative workspace paths unless
+      an absolute path is necessary. Summarize completed changes concisely.
+    toolsets:
+      - type: mcp
+        command: /Users/rumpl/sbx-shell/bin/sbx-shell
+        working_dir: /Users/rumpl/sbx-shell
+        args:
+          - -sbx
+          - /opt/homebrew/bin/sbx
+          - -workspace
+          - /Users/rumpl/sbx-shell
